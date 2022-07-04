@@ -10,6 +10,12 @@ local fsm = machine.create({
     }
 })
 
+local function sleep(s)
+    local ntime = os.clock() + s/10
+    repeat until os.clock() > ntime
+end
+  
+
 function love.load()
     Color = 1
     
@@ -36,11 +42,7 @@ end
 function love.update(dt)
     Text[1] = Rainbow[Color]
     Color = Color == 7 and 1 or Color + 1
-    if love.system.getOS() == "Linux" then
-        os.execute("sleep 0.3")
-    elseif love.system.getOS() == "Windows" then
-        os.execute("timeout 0.3")
-    end
+    sleep(2.3)
 end
 
 function love.draw()
