@@ -1,4 +1,6 @@
 local machine = require "modules/statemachine"
+local intro = require "scenes/intro"
+local menu = require "scenes/menu"
 
 local fsm = machine.create({
     initial = "intro_scene",
@@ -14,11 +16,12 @@ local function sleep(s)
     local ntime = os.clock() + s/10
     repeat until os.clock() > ntime
 end
-  
 
 function love.load()
-    Color = 1
+    -- Resolution
+    Width, Height = love.graphics.getDimensions()
     
+    -- Fonts Game
     Fonts = {
         small_font = love.graphics.newFont("font/pixel-font.ttf", 36),
         mid_font = love.graphics.newFont("font/pixel-font.ttf", 56),
@@ -26,30 +29,37 @@ function love.load()
         huge_font = love.graphics.newFont("font/pixel-font.ttf", 96),
     }
 
-    Rainbow = {
-        {148*0.004, 0*0.004  , 211*0.004}, -- Violet
-        {75*0.004 , 0*0.004  , 130*0.004}, -- Indigo
-        {0*0.004  , 0*0.004  , 255*0.004}, -- Blue
-        {0*0.004  , 255*0.004, 0*0.004  }, -- Green
-        {255*0.004, 255*0.004, 0*0.004  }, -- Yellow
-        {255*0.004, 127*0.004, 0*0.004  }, -- Orange
-        {255*0.004, 0*0.004  , 0*0.004  }, -- Red
+    -- Sounds
+    Music = love.audio.newSource(
+        "audio/menu/MenuTrack.ogg",
+        "static"
+    )
+    UI_sound = {
+        press_intro = love.audio.newSource(
+            "audio/UI/MENU B_Select.wav",
+            "static"
+        ),
+        
     }
 
-    Text = {Rainbow[Color], "Hello"}
 end
 
 function love.update(dt)
-    Text[1] = Rainbow[Color]
-    Color = Color == 7 and 1 or Color + 1
-    sleep(2.3)
 end
 
 function love.draw()
-    local start_text = love.graphics.newText(
-        Fonts.huge_font,
-        Text
-    )
+    if fsm.current == "intro_scene" then
+        intro.create_scene()
+        Music:setLooping(true)
+        Music:play()
+        if love.keyboard.isDown("space") then
+            fsm:menu_scene()
+            UI_sound:play()
+        end
+    end
 
-    love.graphics.draw(start_text, 100, 100)
+    if fsm.current == "menu_scene" then
+        menu.create_scene()
+    end
+    
 end
