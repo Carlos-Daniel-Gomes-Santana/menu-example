@@ -18,13 +18,30 @@ local function sleep(s)
 end
 
 function love.load()
+    -- Resolution
     Width, Height = love.graphics.getDimensions()
+    
+    -- Fonts Game
     Fonts = {
         small_font = love.graphics.newFont("font/pixel-font.ttf", 36),
         mid_font = love.graphics.newFont("font/pixel-font.ttf", 56),
         big_font = love.graphics.newFont("font/pixel-font.ttf", 76),
         huge_font = love.graphics.newFont("font/pixel-font.ttf", 96),
     }
+
+    -- Sounds
+    Music = love.audio.newSource(
+        "audio/menu/SpaceTheme.ogg",
+        "static"
+    )
+    UI_sound = {
+        press_intro = love.audio.newSource(
+            "audio/UI/MENU B_Select.wav",
+            "static"
+        ),
+        
+    }
+
 end
 
 function love.update(dt)
@@ -33,8 +50,11 @@ end
 function love.draw()
     if fsm.current == "intro_scene" then
         intro.create_scene()
+        Music:setLooping(true)
+        Music:play()
         if love.keyboard.isDown("space") then
             fsm:menu_scene()
+            UI_sound.press_intro:play()
         end
     end
 
